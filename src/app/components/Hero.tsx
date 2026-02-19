@@ -23,7 +23,7 @@ export function Hero() {
         <motion.div
           initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
           animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
+          transition={{ duration: 0.75, ease: 'easeOut' }}
           className="w-full h-full"
         >
           <Canvas
@@ -53,7 +53,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
+          transition={{ duration: 0.55, delay: 0.14 }}
         >
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light mb-6 tracking-tight leading-[0.95]">
             Authentic Beauty.<br />
@@ -97,7 +97,7 @@ export function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        transition={{ delay: 0.75, duration: 0.55 }}
         className="absolute bottom-12 left-1/2 -translate-x-1/2 hidden md:block"
       >
         <motion.div

@@ -33,7 +33,7 @@ export function Team() {
   };
 
   return (
-    <section ref={ref} className="py-32 px-6 bg-[#F7F4F1] relative overflow-hidden">
+    <section ref={ref} className="py-20 md:py-24 px-6 bg-[#F7F4F1] relative overflow-hidden">
       {/* Faint contour lines background */}
       <div className="absolute inset-0 opacity-5">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +51,7 @@ export function Team() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-20"
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-6">
@@ -70,7 +70,7 @@ export function Team() {
               key={member.name}
               initial={{ opacity: 0, y: 50 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
+              transition={{ duration: 0.36, delay: 0.1 + index * 0.06 }}
               whileHover={{ y: -10 }}
               whileTap={{ scale: 0.99 }}
               onTap={() => toggleCard(index)}
@@ -82,7 +82,7 @@ export function Team() {
               <motion.div
                 initial={{ clipPath: 'ellipse(0% 0% at 50% 40%)' }}
                 animate={isInView ? { clipPath: 'ellipse(50% 60% at 50% 40%)' } : {}}
-                transition={{ duration: 1, delay: 0.4 + index * 0.15 }}
+                transition={{ duration: 0.55, delay: 0.16 + index * 0.06 }}
                 whileHover={{ clipPath: 'ellipse(55% 65% at 50% 40%)' }}
                 whileTap={{ scale: 1.01 }}
                 className={`relative aspect-[3/4] rounded-[40%] overflow-hidden mb-6 transition-all duration-300 ${

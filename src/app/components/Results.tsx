@@ -68,13 +68,13 @@ export function Results() {
   ];
 
   return (
-    <section ref={ref} className="relative py-32 px-6 bg-[#2D2A26] text-white overflow-hidden">
+    <section ref={ref} className="relative py-20 md:py-24 px-6 bg-[#2D2A26] text-white overflow-hidden">
       {/* Background 3D with Expanding Oval Mask */}
       <div className="absolute inset-0 flex items-center justify-center opacity-40">
         <motion.div
           initial={{ clipPath: 'ellipse(0% 0% at 50% 50%)' }}
           animate={isInView ? { clipPath: 'ellipse(60% 50% at 50% 50%)' } : {}}
-          transition={{ duration: 1.5, delay: 0.3 }}
+          transition={{ duration: 0.75, delay: 0.1 }}
           className="w-full h-full"
         >
           {!shouldReduce3D && isInView ? (
@@ -106,7 +106,7 @@ export function Results() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-8">
             Results That Feel<br />
@@ -123,7 +123,7 @@ export function Results() {
               key={result}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
+              transition={{ duration: 0.36, delay: 0.14 + index * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 1.03, y: -6 }}
               onTap={() => toggleCard(index)}

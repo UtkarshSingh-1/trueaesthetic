@@ -136,12 +136,12 @@ export function Treatments() {
   const { ref, isInView } = useInView({ threshold: 0.1 });
 
   return (
-    <section ref={ref} className="py-32 px-6 bg-gradient-to-b from-[#F7F4F1] to-[#E8DFD8]">
+    <section ref={ref} className="py-20 md:py-24 px-6 bg-gradient-to-b from-[#F7F4F1] to-[#E8DFD8]">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-20"
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-6">

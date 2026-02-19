@@ -20,13 +20,13 @@ export function CTA() {
   };
 
   return (
-    <section ref={ref} className="relative py-32 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
+    <section ref={ref} className="relative py-20 md:py-24 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
       {/* 3D Background with Large Droplet Mask */}
       <div className="absolute inset-0 flex items-center justify-center opacity-60">
         <motion.div
           initial={{ clipPath: 'circle(0% at 50% 50%)' }}
           animate={isInView ? { clipPath: 'circle(50% at 50% 50%)' } : {}}
-          transition={{ duration: 1.5, delay: 0.2 }}
+          transition={{ duration: 0.75, delay: 0.1 }}
           className="w-full h-full"
         >
           {!shouldReduce3D && isInView ? (
@@ -58,7 +58,7 @@ export function CTA() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-6 leading-tight">
             Feel Confident<br />
@@ -104,7 +104,7 @@ export function CTA() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.14 }}
             className="flex flex-col sm:flex-row gap-8 justify-center items-center text-[#6B6661]"
           >
             <div className="flex items-center gap-3">

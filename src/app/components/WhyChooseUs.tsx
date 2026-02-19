@@ -35,12 +35,12 @@ export function WhyChooseUs() {
   };
 
   return (
-    <section ref={ref} className="relative py-32 px-6 bg-gradient-to-br from-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
+    <section ref={ref} className="relative py-20 md:py-24 px-6 bg-gradient-to-br from-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
       {/* Diagonal Mask Transition */}
       <motion.div
         initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
         animate={isInView ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
-        transition={{ duration: 1.2 }}
+        transition={{ duration: 0.6 }}
         className="absolute inset-0 bg-gradient-to-br from-[#F5E8DC] to-[#E8DFD8] opacity-50"
       />
 
@@ -60,7 +60,7 @@ export function WhyChooseUs() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-20"
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-6">
@@ -78,7 +78,7 @@ export function WhyChooseUs() {
                 key={reason.title}
                 initial={{ opacity: 0, y: 50 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+                transition={{ duration: 0.36, delay: 0.1 + index * 0.05 }}
                 whileHover={{ y: -10, scale: 1.01 }}
                 whileTap={{ scale: 1.02, y: -6 }}
                 onTap={() => toggleCard(index)}
