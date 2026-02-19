@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { motion } from 'motion/react';
 import { useInView } from '../hooks/useInView';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
@@ -22,14 +22,18 @@ function GlowingCells() {
     }
   });
 
-  const cells = Array.from({ length: 20 }, (_, i) => ({
-    position: [
-      (Math.random() - 0.5) * 3,
-      (Math.random() - 0.5) * 3,
-      (Math.random() - 0.5) * 3
-    ] as [number, number, number],
-    scale: Math.random() * 0.2 + 0.1
-  }));
+  const cells = useMemo(
+    () =>
+      Array.from({ length: 20 }, () => ({
+        position: [
+          (Math.random() - 0.5) * 3,
+          (Math.random() - 0.5) * 3,
+          (Math.random() - 0.5) * 3,
+        ] as [number, number, number],
+        scale: Math.random() * 0.2 + 0.1,
+      })),
+    [],
+  );
 
   return (
     <group ref={groupRef}>
@@ -52,11 +56,8 @@ export function Results() {
   const { shouldReduce3D } = usePerformanceMode();
   const [activeCard, setActiveCard] = useState<number | null>(null);
 
-  const activateCard = (index: number) => {
-    setActiveCard(index);
-    window.setTimeout(() => {
-      setActiveCard((current) => (current === index ? null : current));
-    }, 420);
+  const toggleCard = (index: number) => {
+    setActiveCard((current) => (current === index ? null : index));
   };
 
   const results = [
@@ -82,6 +83,7 @@ export function Results() {
               dpr={1}
               frameloop="demand"
               gl={{ antialias: false, powerPreference: 'high-performance' }}
+              style={{ pointerEvents: 'none' }}
             >
               <ambientLight intensity={0.5} />
               <pointLight position={[5, 5, 5]} intensity={1} color="#C6A87D" />
@@ -124,8 +126,9 @@ export function Results() {
               transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 1.03, y: -6 }}
-              onTapStart={() => activateCard(index)}
-              onClick={() => activateCard(index)}
+              onTap={() => toggleCard(index)}
+              onHoverStart={() => setActiveCard(index)}
+              onHoverEnd={() => setActiveCard((current) => (current === index ? null : current))}
               className="relative group"
             >
               <div

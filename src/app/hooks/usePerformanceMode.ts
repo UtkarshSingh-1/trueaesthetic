@@ -26,6 +26,9 @@ export function usePerformanceMode() {
   return {
     isMobile,
     prefersReducedMotion,
-    shouldReduce3D: isMobile || prefersReducedMotion,
+    // Disable 3D only when reduced motion is requested.
+    shouldReduce3D: prefersReducedMotion,
+    // Keep a separate signal for simplified settings on mobile.
+    shouldSimplify3D: isMobile || prefersReducedMotion,
   };
 }

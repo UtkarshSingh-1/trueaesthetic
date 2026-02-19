@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { useInView } from '../hooks/useInView';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useState } from 'react';
 
 const teamMembers = [
   {
@@ -25,6 +26,11 @@ const teamMembers = [
 
 export function Team() {
   const { ref, isInView } = useInView({ threshold: 0.2 });
+  const [activeCard, setActiveCard] = useState<number | null>(null);
+
+  const toggleCard = (index: number) => {
+    setActiveCard((current) => (current === index ? null : index));
+  };
 
   return (
     <section ref={ref} className="py-32 px-6 bg-[#F7F4F1] relative overflow-hidden">
@@ -67,6 +73,9 @@ export function Team() {
               transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
               whileHover={{ y: -10 }}
               whileTap={{ scale: 0.99 }}
+              onTap={() => toggleCard(index)}
+              onHoverStart={() => setActiveCard(index)}
+              onHoverEnd={() => setActiveCard((current) => (current === index ? null : current))}
               className="group relative"
             >
               {/* Portrait with Facial Contour Mask */}
@@ -76,7 +85,11 @@ export function Team() {
                 transition={{ duration: 1, delay: 0.4 + index * 0.15 }}
                 whileHover={{ clipPath: 'ellipse(55% 65% at 50% 40%)' }}
                 whileTap={{ scale: 1.01 }}
-                className="relative aspect-[3/4] rounded-[40%] overflow-hidden mb-6 bg-gradient-to-br from-[#E8DFD8] to-[#CFC6BE]"
+                className={`relative aspect-[3/4] rounded-[40%] overflow-hidden mb-6 transition-all duration-300 ${
+                  activeCard === index
+                    ? 'ring-2 ring-[#C6A87D]/60 shadow-2xl'
+                    : 'bg-gradient-to-br from-[#E8DFD8] to-[#CFC6BE]'
+                }`}
               >
                 <ImageWithFallback
                   src={member.image}

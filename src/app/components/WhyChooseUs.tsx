@@ -30,11 +30,8 @@ export function WhyChooseUs() {
   const { ref, isInView } = useInView({ threshold: 0.2 });
   const [activeCard, setActiveCard] = useState<number | null>(null);
 
-  const activateCard = (index: number) => {
-    setActiveCard(index);
-    window.setTimeout(() => {
-      setActiveCard((current) => (current === index ? null : current));
-    }, 420);
+  const toggleCard = (index: number) => {
+    setActiveCard((current) => (current === index ? null : index));
   };
 
   return (
@@ -82,28 +79,31 @@ export function WhyChooseUs() {
                 initial={{ opacity: 0, y: 50 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -10, scale: 1.01 }}
                 whileTap={{ scale: 1.02, y: -6 }}
-                onTapStart={() => activateCard(index)}
-                onClick={() => activateCard(index)}
-                className="group relative"
+                onTap={() => toggleCard(index)}
+                onHoverStart={() => setActiveCard(index)}
+                onHoverEnd={() => setActiveCard((current) => (current === index ? null : current))}
+                className="group relative cursor-pointer"
               >
                 <div
-                  className={`bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-lg transition-all duration-500 border h-full ${
+                  className={`bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-lg transition-all duration-500 border h-full transform-gpu ${
                     activeCard === index
-                      ? 'shadow-2xl border-[#C6A87D]/55'
-                      : 'hover:shadow-2xl active:shadow-2xl border-[#C6A87D]/20 active:border-[#C6A87D]/50'
+                      ? 'shadow-2xl border-[#C6A87D]/55 bg-white/90'
+                      : 'hover:shadow-2xl hover:border-[#C6A87D]/50 hover:bg-white/90 active:shadow-2xl border-[#C6A87D]/20 active:border-[#C6A87D]/50'
                   }`}
                 >
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 300 }}
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C6A87D] to-[#F5E8DC] flex items-center justify-center mb-6"
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C6A87D] to-[#F5E8DC] flex items-center justify-center mb-6 group-hover:shadow-lg group-active:shadow-lg"
                   >
                     <Icon className="w-8 h-8 text-white" />
                   </motion.div>
-                  <h3 className="text-2xl mb-4">{reason.title}</h3>
+                  <h3 className="text-2xl mb-4 transition-colors duration-300 group-hover:text-[#A98657] group-active:text-[#A98657]">
+                    {reason.title}
+                  </h3>
                   <p className="text-[#6B6661] leading-relaxed">{reason.description}</p>
                 </div>
               </motion.div>

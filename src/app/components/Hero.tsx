@@ -1,14 +1,20 @@
 import { Canvas } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
 import { motion } from 'motion/react';
-import { Suspense } from 'react';
+import { useState } from 'react';
 import { FacialContour } from './three/FacialContour';
 import { GelForm } from './three/GelForm';
-import { LoadingSpinner } from './LoadingSpinner';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 export function Hero() {
-  const { shouldReduce3D } = usePerformanceMode();
+  const { shouldReduce3D, shouldSimplify3D } = usePerformanceMode();
+  const [activeButton, setActiveButton] = useState<'book' | 'explore' | null>(null);
+
+  const activateButton = (key: 'book' | 'explore') => {
+    setActiveButton(key);
+    window.setTimeout(() => {
+      setActiveButton((current) => (current === key ? null : current));
+    }, 420);
+  };
 
   return (
     <section className="relative min-h-screen pt-28 sm:pt-32 md:pt-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#F7F4F1] via-[#E8DFD8] to-[#F5E8DC]">
@@ -20,20 +26,19 @@ export function Hero() {
           transition={{ duration: 1.5, ease: 'easeOut' }}
           className="w-full h-full"
         >
-          <Suspense fallback={<LoadingSpinner />}>
-            <Canvas
-              camera={{ position: [0, 0, 5], fov: 50 }}
-              dpr={shouldReduce3D ? 1 : [1, 1.5]}
-              gl={{ antialias: !shouldReduce3D, powerPreference: 'high-performance' }}
-            >
-              <ambientLight intensity={0.5} />
-              <directionalLight position={[5, 5, 5]} intensity={1} />
-              <pointLight position={[-5, -5, -5]} intensity={0.3} color="#C6A87D" />
-              <FacialContour />
-              <GelForm />
-              <Environment preset="studio" />
-            </Canvas>
-          </Suspense>
+          <Canvas
+            camera={{ position: [0, 0, 5], fov: 50 }}
+            dpr={shouldSimplify3D ? 1 : [1, 1.5]}
+            gl={{ antialias: !shouldSimplify3D, powerPreference: 'high-performance' }}
+            style={{ pointerEvents: 'none' }}
+          >
+            <ambientLight intensity={0.6} />
+            <hemisphereLight args={['#fff7ef', '#c7b8a6', 0.55]} />
+            <directionalLight position={[5, 5, 5]} intensity={1} />
+            <pointLight position={[-5, -5, -5]} intensity={0.3} color="#C6A87D" />
+            <FacialContour />
+            <GelForm />
+          </Canvas>
         </motion.div>
       </div>
       {shouldReduce3D ? (
@@ -61,14 +66,26 @@ export function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#C6A87D' }}
-              className="w-full sm:w-auto px-8 py-4 bg-[#2D2A26] text-[#F7F4F1] rounded-full uppercase tracking-wider text-sm hover:bg-[#C6A87D] active:bg-[#C6A87D] transition-colors duration-300"
+              onTapStart={() => activateButton('book')}
+              onClick={() => activateButton('book')}
+              className={`w-full sm:w-auto px-8 py-4 rounded-full uppercase tracking-wider text-sm transition-colors duration-300 ${
+                activeButton === 'book'
+                  ? 'bg-[#C6A87D] text-[#F7F4F1]'
+                  : 'bg-[#2D2A26] text-[#F7F4F1] hover:bg-[#C6A87D] active:bg-[#C6A87D]'
+              }`}
             >
               Book Consultation
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#C6A87D', color: '#F7F4F1' }}
-              className="w-full sm:w-auto px-8 py-4 border-2 border-[#C6A87D] text-[#2D2A26] rounded-full uppercase tracking-wider text-sm hover:bg-[#C6A87D] hover:text-[#F7F4F1] active:bg-[#C6A87D] active:text-[#F7F4F1] transition-all duration-300"
+              onTapStart={() => activateButton('explore')}
+              onClick={() => activateButton('explore')}
+              className={`w-full sm:w-auto px-8 py-4 border-2 rounded-full uppercase tracking-wider text-sm transition-all duration-300 ${
+                activeButton === 'explore'
+                  ? 'border-[#C6A87D] bg-[#C6A87D] text-[#F7F4F1]'
+                  : 'border-[#C6A87D] text-[#2D2A26] hover:bg-[#C6A87D] hover:text-[#F7F4F1] active:bg-[#C6A87D] active:text-[#F7F4F1]'
+              }`}
             >
               Explore Treatments
             </motion.button>

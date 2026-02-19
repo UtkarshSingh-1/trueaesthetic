@@ -84,6 +84,7 @@ export function Philosophy() {
                   dpr={1}
                   frameloop="demand"
                   gl={{ antialias: false, powerPreference: 'high-performance' }}
+                  style={{ pointerEvents: 'none' }}
                 >
                   <ambientLight intensity={0.6} />
                   <directionalLight position={[5, 5, 5]} intensity={1} />

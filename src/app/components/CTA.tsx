@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 import { useInView } from '../hooks/useInView';
 import { SerumDroplets } from './three/SerumDroplets';
 import { Calendar, Phone, Mail } from 'lucide-react';
@@ -8,7 +9,15 @@ import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 export function CTA() {
   const { ref, isInView } = useInView({ threshold: 0.3 });
-  const { shouldReduce3D } = usePerformanceMode();
+  const { shouldReduce3D, shouldSimplify3D } = usePerformanceMode();
+  const [activeButton, setActiveButton] = useState<'book' | 'contact' | null>(null);
+
+  const activateButton = (key: 'book' | 'contact') => {
+    setActiveButton(key);
+    window.setTimeout(() => {
+      setActiveButton((current) => (current === key ? null : current));
+    }, 420);
+  };
 
   return (
     <section ref={ref} className="relative py-32 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
@@ -25,7 +34,8 @@ export function CTA() {
               camera={{ position: [0, 0, 6], fov: 50 }}
               dpr={1}
               frameloop="demand"
-              gl={{ antialias: false, powerPreference: 'high-performance' }}
+              gl={{ antialias: !shouldSimplify3D, powerPreference: 'high-performance' }}
+              style={{ pointerEvents: 'none' }}
             >
               <ambientLight intensity={0.5} />
               <directionalLight position={[5, 5, 5]} intensity={1} />
@@ -63,7 +73,13 @@ export function CTA() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#C6A87D' }}
-              className="w-full sm:w-auto px-10 py-5 bg-[#2D2A26] text-[#F7F4F1] rounded-full uppercase tracking-wider text-sm hover:bg-[#C6A87D] active:bg-[#C6A87D] transition-colors duration-300 flex items-center justify-center gap-3"
+              onTapStart={() => activateButton('book')}
+              onClick={() => activateButton('book')}
+              className={`w-full sm:w-auto px-10 py-5 rounded-full uppercase tracking-wider text-sm transition-colors duration-300 flex items-center justify-center gap-3 ${
+                activeButton === 'book'
+                  ? 'bg-[#C6A87D] text-[#F7F4F1]'
+                  : 'bg-[#2D2A26] text-[#F7F4F1] hover:bg-[#C6A87D] active:bg-[#C6A87D]'
+              }`}
             >
               <Calendar className="w-5 h-5" />
               Book Appointment
@@ -71,7 +87,13 @@ export function CTA() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#2D2A26', color: '#F7F4F1' }}
-              className="w-full sm:w-auto px-10 py-5 border-2 border-[#2D2A26] text-[#2D2A26] rounded-full uppercase tracking-wider text-sm hover:bg-[#2D2A26] hover:text-[#F7F4F1] active:bg-[#2D2A26] active:text-[#F7F4F1] transition-all duration-300 flex items-center justify-center gap-3"
+              onTapStart={() => activateButton('contact')}
+              onClick={() => activateButton('contact')}
+              className={`w-full sm:w-auto px-10 py-5 border-2 rounded-full uppercase tracking-wider text-sm transition-all duration-300 flex items-center justify-center gap-3 ${
+                activeButton === 'contact'
+                  ? 'border-[#2D2A26] bg-[#2D2A26] text-[#F7F4F1]'
+                  : 'border-[#2D2A26] text-[#2D2A26] hover:bg-[#2D2A26] hover:text-[#F7F4F1] active:bg-[#2D2A26] active:text-[#F7F4F1]'
+              }`}
             >
               <Phone className="w-5 h-5" />
               Contact Clinic

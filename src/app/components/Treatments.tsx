@@ -58,9 +58,8 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
   const Icon = treatment.icon;
   const ThreeComponent = treatment.component;
 
-  const activateCard = () => {
-    setActiveCard(true);
-    window.setTimeout(() => setActiveCard(false), 420);
+  const toggleCard = () => {
+    setActiveCard((current) => !current);
   };
 
   return (
@@ -71,8 +70,9 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ y: -10 }}
       whileTap={{ scale: 1.02, y: -6 }}
-      onTapStart={activateCard}
-      onClick={activateCard}
+      onTap={toggleCard}
+      onHoverStart={() => setActiveCard(true)}
+      onHoverEnd={() => setActiveCard(false)}
       className="group relative"
     >
       <div className={`bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 border ${
@@ -99,6 +99,7 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
                 dpr={1}
                 frameloop="demand"
                 gl={{ antialias: false, powerPreference: 'high-performance' }}
+                style={{ pointerEvents: 'none' }}
               >
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[3, 3, 3]} intensity={1} />
