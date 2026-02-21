@@ -61,14 +61,8 @@ const treatments: Treatment[] = [
 
 function TreatmentCard({ treatment, index }: { treatment: Treatment; index: number }) {
   const { ref, isInView } = useInView({ threshold: 0.2, once: true });
-  const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
-  const { shouldSimplify3D } = usePerformanceMode();
   const [activeCard, setActiveCard] = useState(false);
   const Icon = treatment.icon;
-  const ThreeComponent = treatment.component;
-  // On mobile, shouldSimplify3D is true — skip WebGL entirely to avoid
-  // hitting browser WebGL context limits (causes blank/skipped sections)
-  const showCanvas = isCanvasInView && !shouldSimplify3D;
 
   const navigate = useNavigate();
 
@@ -97,55 +91,30 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
         ? 'shadow-2xl border-[#C6A87D]/45'
         : 'hover:shadow-2xl active:shadow-2xl border-[#C6A87D]/10 active:border-[#C6A87D]/40'
         }`}>
-        {/* 3D Window with Rounded Mask */}
-        <motion.div
-          ref={canvasRef}
-          initial={{ clipPath: 'inset(100% 0% 0% 0% round 24px)' }}
-          animate={isInView ? { clipPath: 'inset(0% 0% 0% 0% round 24px)' } : {}}
-          transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
-          className="h-64 bg-gradient-to-br from-[#E8DFD8] to-[#F5E8DC] relative overflow-hidden"
-        >
+        {/* Image / Animation Area with Rounded Mask */}
+        <div className="h-64 bg-gradient-to-br from-[#E8DFD8] to-[#F5E8DC] relative overflow-hidden rounded-t-[24px]">
           <motion.div
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 1.02 }}
             transition={{ duration: 0.4 }}
-            className="w-full h-full"
+            className="w-full h-full flex items-center justify-center relative overflow-hidden"
           >
-            {showCanvas ? (
-              <Canvas
-                camera={{ position: [0, 0, 5], fov: 45 }}
-                dpr={1}
-                frameloop="always"
-                gl={{ antialias: false, powerPreference: 'high-performance' }}
-                style={{ pointerEvents: 'none' }}
-              >
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[3, 3, 3]} intensity={1} />
-                <pointLight position={[-3, -3, -3]} intensity={0.3} color="#C6A87D" />
-                <ThreeComponent />
-                <Environment preset="studio" />
-              </Canvas>
-            ) : (
-              // Mobile CSS fallback — pulsing ring + drifting particles
-              <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
-                {/* Outer pulsing ring */}
-                <div className="mobile-pulse-ring absolute w-36 h-36 rounded-full border-2 border-[#C6A87D]/20" />
-                {/* Inner ring */}
-                <div className="mobile-pulse-ring absolute w-24 h-24 rounded-full border border-[#C6A87D]/30" style={{ animationDelay: '0.5s' }} />
-                {/* Center icon */}
-                <div className="mobile-orb-float relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-[#C6A87D]/40 to-[#F5E8DC] flex items-center justify-center shadow-lg">
-                  <Icon className="w-9 h-9 text-[#C6A87D]" />
-                </div>
-                {/* Drift particles */}
-                <div className="mobile-drift-1 absolute top-4 right-8 w-2 h-2 rounded-full bg-[#C6A87D]/60" />
-                <div className="mobile-drift-2 absolute top-10 left-6 w-1.5 h-1.5 rounded-full bg-[#C6A87D]/40" />
-                <div className="mobile-drift-3 absolute bottom-8 right-6 w-2 h-2 rounded-full bg-[#C6A87D]/50" />
-                <div className="mobile-drift-4 absolute bottom-6 left-8 w-1 h-1 rounded-full bg-[#C6A87D]/60" />
-                <div className="mobile-drift-5 absolute top-1/2 right-4 w-1.5 h-1.5 rounded-full bg-[#F5E8DC]/80" />
-              </div>
-            )}
+            {/* Outer pulsing ring */}
+            <div className="mobile-pulse-ring absolute w-36 h-36 rounded-full border-2 border-[#C6A87D]/20" />
+            {/* Inner ring */}
+            <div className="mobile-pulse-ring absolute w-24 h-24 rounded-full border border-[#C6A87D]/30" style={{ animationDelay: '0.5s' }} />
+            {/* Center icon */}
+            <div className="mobile-orb-float relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-[#C6A87D]/40 to-[#F5E8DC] flex items-center justify-center shadow-lg">
+              <Icon className="w-9 h-9 text-[#C6A87D]" />
+            </div>
+            {/* Drift particles */}
+            <div className="mobile-drift-1 absolute top-4 right-8 w-2 h-2 rounded-full bg-[#C6A87D]/60" />
+            <div className="mobile-drift-2 absolute top-10 left-6 w-1.5 h-1.5 rounded-full bg-[#C6A87D]/40" />
+            <div className="mobile-drift-3 absolute bottom-8 right-6 w-2 h-2 rounded-full bg-[#C6A87D]/50" />
+            <div className="mobile-drift-4 absolute bottom-6 left-8 w-1 h-1 rounded-full bg-[#C6A87D]/60" />
+            <div className="mobile-drift-5 absolute top-1/2 right-4 w-1.5 h-1.5 rounded-full bg-[#F5E8DC]/80" />
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Content */}
         <div className="p-8">
