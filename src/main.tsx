@@ -1,5 +1,6 @@
 
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import App from "./app/App.tsx";
 import { ErrorBoundary } from "./app/components/ErrorBoundary.tsx";
 import "./styles/index.css";
@@ -30,11 +31,13 @@ window.addEventListener("unhandledrejection", (event) => {
 try {
   createRoot(document.getElementById("root")!).render(
     <ErrorBoundary>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ErrorBoundary>,
   );
 } catch (error) {
   const message = error instanceof Error ? (error.stack || error.message) : String(error);
   showStartupError(message);
 }
-  
+

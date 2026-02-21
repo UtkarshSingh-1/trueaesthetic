@@ -10,8 +10,11 @@ import { BodySurface } from './three/BodySurface';
 import { Syringe, Sparkles, Scissors, Droplets, Waves } from 'lucide-react';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 import { useState } from 'react';
+import { scrollToSection } from '../utils/scroll';
+import { useNavigate } from 'react-router';
 
 interface Treatment {
+  slug: string;
   title: string;
   description: string;
   icon: any;
@@ -20,30 +23,35 @@ interface Treatment {
 
 const treatments: Treatment[] = [
   {
+    slug: 'injectables',
     title: 'Injectables',
     description: 'Neurotoxins & dermal fillers for natural enhancement',
     icon: Syringe,
     component: GelForm
   },
   {
+    slug: 'skin-rejuvenation',
     title: 'Skin Rejuvenation',
     description: 'Advanced treatments for texture, tone, & radiance',
     icon: Sparkles,
     component: CollagenMesh
   },
   {
+    slug: 'hair-restoration',
     title: 'Hair Restoration',
     description: 'Regenerative therapies for natural hair growth',
     icon: Scissors,
     component: FollicleClusters
   },
   {
+    slug: 'iv-wellness',
     title: 'IV Wellness',
     description: 'Custom nutrient infusions for vitality & glow',
     icon: Droplets,
     component: SerumDroplets
   },
   {
+    slug: 'body-contouring',
     title: 'Body Contouring',
     description: 'Non-surgical sculpting & skin tightening',
     icon: Waves,
@@ -52,14 +60,24 @@ const treatments: Treatment[] = [
 ];
 
 function TreatmentCard({ treatment, index }: { treatment: Treatment; index: number }) {
-  const { ref, isInView } = useInView({ threshold: 0.2 });
-  const { shouldReduce3D } = usePerformanceMode();
+  const { ref, isInView } = useInView({ threshold: 0.2, once: true });
+  const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
+  const { shouldSimplify3D } = usePerformanceMode();
   const [activeCard, setActiveCard] = useState(false);
   const Icon = treatment.icon;
   const ThreeComponent = treatment.component;
+  // On mobile, shouldSimplify3D is true — skip WebGL entirely to avoid
+  // hitting browser WebGL context limits (causes blank/skipped sections)
+  const showCanvas = isCanvasInView && !shouldSimplify3D;
+
+  const navigate = useNavigate();
 
   const toggleCard = () => {
     setActiveCard((current) => !current);
+  };
+
+  const handleLearnMore = () => {
+    navigate(`/services/${treatment.slug}`);
   };
 
   return (
@@ -75,13 +93,13 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
       onHoverEnd={() => setActiveCard(false)}
       className="group relative"
     >
-      <div className={`bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 border ${
-        activeCard
-          ? 'shadow-2xl border-[#C6A87D]/45'
-          : 'hover:shadow-2xl active:shadow-2xl border-[#C6A87D]/10 active:border-[#C6A87D]/40'
-      }`}>
+      <div className={`bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 border ${activeCard
+        ? 'shadow-2xl border-[#C6A87D]/45'
+        : 'hover:shadow-2xl active:shadow-2xl border-[#C6A87D]/10 active:border-[#C6A87D]/40'
+        }`}>
         {/* 3D Window with Rounded Mask */}
         <motion.div
+          ref={canvasRef}
           initial={{ clipPath: 'inset(100% 0% 0% 0% round 24px)' }}
           animate={isInView ? { clipPath: 'inset(0% 0% 0% 0% round 24px)' } : {}}
           transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
@@ -93,11 +111,11 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
             transition={{ duration: 0.4 }}
             className="w-full h-full"
           >
-            {isInView && !shouldReduce3D ? (
+            {showCanvas ? (
               <Canvas
                 camera={{ position: [0, 0, 5], fov: 45 }}
                 dpr={1}
-                frameloop="demand"
+                frameloop="always"
                 gl={{ antialias: false, powerPreference: 'high-performance' }}
                 style={{ pointerEvents: 'none' }}
               >
@@ -107,7 +125,25 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
                 <ThreeComponent />
                 <Environment preset="studio" />
               </Canvas>
-            ) : null}
+            ) : (
+              // Mobile CSS fallback — pulsing ring + drifting particles
+              <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
+                {/* Outer pulsing ring */}
+                <div className="mobile-pulse-ring absolute w-36 h-36 rounded-full border-2 border-[#C6A87D]/20" />
+                {/* Inner ring */}
+                <div className="mobile-pulse-ring absolute w-24 h-24 rounded-full border border-[#C6A87D]/30" style={{ animationDelay: '0.5s' }} />
+                {/* Center icon */}
+                <div className="mobile-orb-float relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-[#C6A87D]/40 to-[#F5E8DC] flex items-center justify-center shadow-lg">
+                  <Icon className="w-9 h-9 text-[#C6A87D]" />
+                </div>
+                {/* Drift particles */}
+                <div className="mobile-drift-1 absolute top-4 right-8 w-2 h-2 rounded-full bg-[#C6A87D]/60" />
+                <div className="mobile-drift-2 absolute top-10 left-6 w-1.5 h-1.5 rounded-full bg-[#C6A87D]/40" />
+                <div className="mobile-drift-3 absolute bottom-8 right-6 w-2 h-2 rounded-full bg-[#C6A87D]/50" />
+                <div className="mobile-drift-4 absolute bottom-6 left-8 w-1 h-1 rounded-full bg-[#C6A87D]/60" />
+                <div className="mobile-drift-5 absolute top-1/2 right-4 w-1.5 h-1.5 rounded-full bg-[#F5E8DC]/80" />
+              </div>
+            )}
           </motion.div>
         </motion.div>
 
@@ -121,10 +157,11 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
           <motion.button
             whileHover={{ x: 5 }}
             whileTap={{ scale: 0.98 }}
+            onClick={handleLearnMore}
             className="mt-6 text-[#C6A87D] uppercase text-sm tracking-wider flex items-center gap-2 group-hover:gap-3 group-active:gap-3 transition-all"
           >
-            Learn More
-            <span>-&gt;</span>
+            Book {treatment.title}
+            <span>→</span>
           </motion.button>
         </div>
       </div>
@@ -167,4 +204,3 @@ export function Treatments() {
     </section>
   );
 }
-

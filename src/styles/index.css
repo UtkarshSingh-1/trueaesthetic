@@ -38,6 +38,7 @@ html {
 
 /* Reduced motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -49,15 +50,37 @@ html {
 }
 
 @keyframes ambientBlobA {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.35; }
-  50% { transform: translate(28px, -18px) scale(1.08); opacity: 0.55; }
-  100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translate(28px, -18px) scale(1.08);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
 }
 
 @keyframes ambientBlobB {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-  50% { transform: translate(-26px, 16px) scale(1.06); opacity: 0.5; }
-  100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: translate(-26px, 16px) scale(1.06);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
 }
 
 .ambient-blob-a {
@@ -66,4 +89,137 @@ html {
 
 .ambient-blob-b {
   animation: ambientBlobB 5.5s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────
+   Mobile CSS Animations — replace WebGL effects
+   All run on the CSS compositor, zero JS/WebGL
+───────────────────────────────────────────── */
+
+/* Floating orb — simulates GlowingCells (Results bg) */
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+
+  33% {
+    transform: translate(15px, -20px) scale(1.1);
+    opacity: 0.7;
+  }
+
+  66% {
+    transform: translate(-10px, 10px) scale(0.95);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes floatOrbAlt {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: translate(-20px, 15px) scale(1.08);
+    opacity: 0.6;
+  }
+
+  80% {
+    transform: translate(12px, -8px) scale(0.92);
+    opacity: 0.35;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+}
+
+/* Pulsing ring — simulates GelForm/collagen mesh */
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+}
+
+/* Spinning slow — simulates follicle orbit */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Drift particle */
+@keyframes driftParticle {
+  0% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(-30px) translateX(10px);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.7;
+  }
+}
+
+.mobile-orb-float {
+  animation: floatOrb 7s ease-in-out infinite;
+}
+
+.mobile-orb-float-alt {
+  animation: floatOrbAlt 9s ease-in-out infinite;
+}
+
+.mobile-pulse-ring {
+  animation: pulseRing 4s ease-in-out infinite;
+}
+
+.mobile-spin-slow {
+  animation: spinSlow 20s linear infinite;
+}
+
+.mobile-drift-1 {
+  animation: driftParticle 5s ease-in-out infinite;
+}
+
+.mobile-drift-2 {
+  animation: driftParticle 6.5s ease-in-out infinite 1s;
+}
+
+.mobile-drift-3 {
+  animation: driftParticle 8s ease-in-out infinite 2s;
+}
+
+.mobile-drift-4 {
+  animation: driftParticle 7s ease-in-out infinite 0.5s;
+}
+
+.mobile-drift-5 {
+  animation: driftParticle 5.5s ease-in-out infinite 1.5s;
 }

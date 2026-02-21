@@ -28,7 +28,9 @@ export function usePerformanceMode() {
     prefersReducedMotion,
     // Disable 3D only when reduced motion is requested.
     shouldReduce3D: prefersReducedMotion,
-    // Keep a separate signal for simplified settings on mobile.
-    shouldSimplify3D: isMobile || prefersReducedMotion,
+    // We no longer forcefully simplify/disable WebGL just for being on mobile, 
+    // because we now rigidly unmount canvases when they scroll off-screen 
+    // to prevent WebGL context exhaustion.
+    shouldSimplify3D: prefersReducedMotion,
   };
 }

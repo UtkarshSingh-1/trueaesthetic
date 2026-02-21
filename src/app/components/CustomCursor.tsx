@@ -8,17 +8,17 @@ export function CustomCursor() {
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
-      
+
       // Check if hovering over clickable element
       const target = e.target as HTMLElement;
-      const isClickable = target.tagName === 'BUTTON' || 
-                          target.tagName === 'A' ||
-                          target.closest('button') !== null ||
-                          target.closest('a') !== null;
+      const isClickable = target.tagName === 'BUTTON' ||
+        target.tagName === 'A' ||
+        target.closest('button') !== null ||
+        target.closest('a') !== null;
       setIsPointer(isClickable);
     };
 
-    window.addEventListener('mousemove', updateMousePosition);
+    window.addEventListener('mousemove', updateMousePosition, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', updateMousePosition);

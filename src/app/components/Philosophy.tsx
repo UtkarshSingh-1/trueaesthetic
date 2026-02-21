@@ -9,8 +9,9 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 export function Philosophy() {
-  const { ref, isInView } = useInView({ threshold: 0.3 });
-  const { shouldReduce3D } = usePerformanceMode();
+  const { ref, isInView } = useInView({ threshold: 0.05, once: true });
+  const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
+  const { shouldSimplify3D } = usePerformanceMode();
 
   const pillars = [
     'Safety-First',
@@ -42,8 +43,8 @@ export function Philosophy() {
             </motion.div>
 
             <p className="text-lg text-[#6B6661] leading-relaxed">
-              We believe aesthetic treatments should feel personal, safe, and naturally beautiful. 
-              Every plan is tailored to your features, goals, and skin biology — blending science, 
+              We believe aesthetic treatments should feel personal, safe, and naturally beautiful.
+              Every plan is tailored to your features, goals, and skin biology — blending science,
               artistry, and clinical expertise.
             </p>
 
@@ -73,16 +74,17 @@ export function Philosophy() {
             className="relative h-[600px] hidden lg:block"
           >
             <motion.div
+              ref={canvasRef}
               initial={{ clipPath: 'circle(0% at 50% 50%)' }}
               animate={isInView ? { clipPath: 'circle(70% at 50% 50%)' } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="absolute inset-0 rounded-[40%] overflow-hidden bg-gradient-to-br from-[#E8DFD8] to-[#CFC6BE]"
             >
-              {!shouldReduce3D && isInView ? (
+              {!shouldSimplify3D && isCanvasInView ? (
                 <Canvas
                   camera={{ position: [0, 0, 5], fov: 50 }}
                   dpr={1}
-                  frameloop="demand"
+                  frameloop="always"
                   gl={{ antialias: false, powerPreference: 'high-performance' }}
                   style={{ pointerEvents: 'none' }}
                 >
@@ -94,7 +96,13 @@ export function Philosophy() {
                   </Suspense>
                   <Environment preset="studio" />
                 </Canvas>
-              ) : null}
+              ) : (
+                <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
+                  <div className="mobile-orb-float absolute -top-10 -left-16 w-72 h-72 rounded-full bg-[#C6A87D]/25 blur-3xl text-red-500" />
+                  <div className="mobile-orb-float-alt absolute -bottom-12 -right-12 w-80 h-80 rounded-full bg-[#E8DFD8]/60 blur-3xl text-blue-500" />
+                  <div className="mobile-orb-float absolute top-1/4 right-1/4 w-48 h-48 rounded-full bg-[#C6A87D]/20 blur-3xl opacity-60" style={{ animationDelay: '1.5s' }} />
+                </div>
+              )}
             </motion.div>
           </motion.div>
         </div>

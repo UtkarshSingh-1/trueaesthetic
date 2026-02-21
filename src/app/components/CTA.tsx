@@ -6,10 +6,13 @@ import { useInView } from '../hooks/useInView';
 import { SerumDroplets } from './three/SerumDroplets';
 import { Calendar, Phone, Mail } from 'lucide-react';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
+import { useNavigate } from 'react-router';
 
 export function CTA() {
-  const { ref, isInView } = useInView({ threshold: 0.3 });
+  const { ref, isInView } = useInView({ threshold: 0.05, once: true });
+  const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
   const { shouldReduce3D, shouldSimplify3D } = usePerformanceMode();
+  const navigate = useNavigate();
   const [activeButton, setActiveButton] = useState<'book' | 'contact' | null>(null);
 
   const activateButton = (key: 'book' | 'contact') => {
@@ -19,21 +22,33 @@ export function CTA() {
     }, 420);
   };
 
+  const handleBook = () => {
+    activateButton('book');
+    setTimeout(() => navigate('/book'), 200);
+  };
+
+  const handleContact = () => {
+    activateButton('contact');
+    setTimeout(() => {
+      window.open('mailto:hello@trueaesthetic.com?subject=Consultation%20Enquiry', '_self');
+    }, 200);
+  };
+
   return (
     <section ref={ref} className="relative py-20 md:py-24 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
       {/* 3D Background with Large Droplet Mask */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-60">
+      <div ref={canvasRef} className="absolute inset-0 flex items-center justify-center opacity-60">
         <motion.div
           initial={{ clipPath: 'circle(0% at 50% 50%)' }}
           animate={isInView ? { clipPath: 'circle(50% at 50% 50%)' } : {}}
           transition={{ duration: 0.75, delay: 0.1 }}
           className="w-full h-full"
         >
-          {!shouldReduce3D && isInView ? (
+          {!shouldSimplify3D && isCanvasInView ? (
             <Canvas
               camera={{ position: [0, 0, 6], fov: 50 }}
               dpr={1}
-              frameloop="demand"
+              frameloop="always"
               gl={{ antialias: !shouldSimplify3D, powerPreference: 'high-performance' }}
               style={{ pointerEvents: 'none' }}
             >
@@ -46,10 +61,12 @@ export function CTA() {
           ) : null}
         </motion.div>
       </div>
-      {shouldReduce3D ? (
-        <div aria-hidden className="absolute inset-0 pointer-events-none">
-          <div className="ambient-blob-a absolute top-10 -left-16 w-64 h-64 rounded-full bg-[#C6A87D]/30 blur-3xl" />
-          <div className="ambient-blob-b absolute bottom-0 -right-12 w-72 h-72 rounded-full bg-[#F5E8DC]/70 blur-3xl" />
+      {/* Mobile / reduced-motion / off-screen fallback (Zero WebGL, CSS only) */}
+      {shouldSimplify3D || !isCanvasInView ? (
+        <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="mobile-orb-float absolute top-10 -left-16 w-64 h-64 rounded-full bg-[#C6A87D]/30 blur-3xl opacity-60" />
+          <div className="mobile-orb-float-alt absolute bottom-0 -right-12 w-72 h-72 rounded-full bg-[#F5E8DC]/70 blur-3xl opacity-80" />
+          <div className="mobile-orb-float absolute top-1/2 left-1/4 w-32 h-32 rounded-full bg-[#C6A87D]/20 blur-2xl opacity-40" style={{ animationDelay: '2s' }} />
         </div>
       ) : null}
 
@@ -65,7 +82,7 @@ export function CTA() {
             <span className="italic text-[#C6A87D]">In Your Skin</span>
           </h2>
           <p className="text-lg md:text-xl text-[#6B6661] mb-12 max-w-2xl mx-auto">
-            Book your personalized aesthetic consultation today and begin your journey 
+            Book your personalized aesthetic consultation today and begin your journey
             to natural, refined beauty.
           </p>
 
@@ -73,13 +90,11 @@ export function CTA() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#C6A87D' }}
-              onTapStart={() => activateButton('book')}
-              onClick={() => activateButton('book')}
-              className={`w-full sm:w-auto px-10 py-5 rounded-full uppercase tracking-wider text-sm transition-colors duration-300 flex items-center justify-center gap-3 ${
-                activeButton === 'book'
-                  ? 'bg-[#C6A87D] text-[#F7F4F1]'
-                  : 'bg-[#2D2A26] text-[#F7F4F1] hover:bg-[#C6A87D] active:bg-[#C6A87D]'
-              }`}
+              onClick={handleBook}
+              className={`w-full sm:w-auto px-10 py-5 rounded-full uppercase tracking-wider text-sm transition-colors duration-300 flex items-center justify-center gap-3 ${activeButton === 'book'
+                ? 'bg-[#C6A87D] text-[#F7F4F1]'
+                : 'bg-[#2D2A26] text-[#F7F4F1] hover:bg-[#C6A87D] active:bg-[#C6A87D]'
+                }`}
             >
               <Calendar className="w-5 h-5" />
               Book Appointment
@@ -87,35 +102,39 @@ export function CTA() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97, backgroundColor: '#2D2A26', color: '#F7F4F1' }}
-              onTapStart={() => activateButton('contact')}
-              onClick={() => activateButton('contact')}
-              className={`w-full sm:w-auto px-10 py-5 border-2 rounded-full uppercase tracking-wider text-sm transition-all duration-300 flex items-center justify-center gap-3 ${
-                activeButton === 'contact'
-                  ? 'border-[#2D2A26] bg-[#2D2A26] text-[#F7F4F1]'
-                  : 'border-[#2D2A26] text-[#2D2A26] hover:bg-[#2D2A26] hover:text-[#F7F4F1] active:bg-[#2D2A26] active:text-[#F7F4F1]'
-              }`}
+              onClick={handleContact}
+              className={`w-full sm:w-auto px-10 py-5 border-2 rounded-full uppercase tracking-wider text-sm transition-all duration-300 flex items-center justify-center gap-3 ${activeButton === 'contact'
+                ? 'border-[#2D2A26] bg-[#2D2A26] text-[#F7F4F1]'
+                : 'border-[#2D2A26] text-[#2D2A26] hover:bg-[#2D2A26] hover:text-[#F7F4F1] active:bg-[#2D2A26] active:text-[#F7F4F1]'
+                }`}
             >
               <Phone className="w-5 h-5" />
               Contact Clinic
             </motion.button>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info — clickable */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.14 }}
             className="flex flex-col sm:flex-row gap-8 justify-center items-center text-[#6B6661]"
           >
-            <div className="flex items-center gap-3">
+            <a
+              href="tel:+15551234567"
+              className="flex items-center gap-3 hover:text-[#C6A87D] transition-colors duration-300"
+            >
               <Phone className="w-5 h-5 text-[#C6A87D]" />
               <span>(555) 123-4567</span>
-            </div>
+            </a>
             <div className="hidden sm:block w-px h-6 bg-[#C6A87D]/30" />
-            <div className="flex items-center gap-3">
+            <a
+              href="mailto:hello@trueaesthetic.com"
+              className="flex items-center gap-3 hover:text-[#C6A87D] transition-colors duration-300"
+            >
               <Mail className="w-5 h-5 text-[#C6A87D]" />
               <span>hello@trueaesthetic.com</span>
-            </div>
+            </a>
           </motion.div>
         </motion.div>
       </div>

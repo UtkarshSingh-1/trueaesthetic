@@ -9,11 +9,11 @@ import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 function GlowingCells() {
   const groupRef = useRef<THREE.Group>(null);
-  
+
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.002;
-      
+
       // Pulsing glow effect
       groupRef.current.children.forEach((child, i) => {
         const scale = 1 + Math.sin(state.clock.elapsedTime * 2 + i) * 0.2;
@@ -52,8 +52,9 @@ function GlowingCells() {
 }
 
 export function Results() {
-  const { ref, isInView } = useInView({ threshold: 0.3 });
-  const { shouldReduce3D } = usePerformanceMode();
+  const { ref, isInView } = useInView({ threshold: 0.05, once: true });
+  const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
+  const { shouldSimplify3D } = usePerformanceMode();
   const [activeCard, setActiveCard] = useState<number | null>(null);
 
   const toggleCard = (index: number) => {
@@ -77,11 +78,12 @@ export function Results() {
           transition={{ duration: 0.75, delay: 0.1 }}
           className="w-full h-full"
         >
-          {!shouldReduce3D && isInView ? (
+          {/* GlowingCells uses useFrame → needs frameloop="always" not "demand" */}
+          {!shouldSimplify3D && isInView ? (
             <Canvas
               camera={{ position: [0, 0, 6], fov: 50 }}
               dpr={1}
-              frameloop="demand"
+              frameloop="always"
               gl={{ antialias: false, powerPreference: 'high-performance' }}
               style={{ pointerEvents: 'none' }}
             >
@@ -94,10 +96,15 @@ export function Results() {
           ) : null}
         </motion.div>
       </div>
-      {shouldReduce3D ? (
-        <div aria-hidden className="absolute inset-0 pointer-events-none">
-          <div className="ambient-blob-a absolute -top-10 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-[#C6A87D]/20 blur-3xl" />
-          <div className="ambient-blob-b absolute -bottom-10 left-8 w-64 h-64 rounded-full bg-[#F5E8DC]/10 blur-3xl" />
+      {/* Mobile / reduced-motion / off-screen fallback */}
+      {shouldSimplify3D || !isCanvasInView ? (
+        <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Animated orbs simulating GlowingCells without WebGL */}
+          <div className="mobile-orb-float absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-[#C6A87D]/25 blur-2xl" />
+          <div className="mobile-orb-float-alt absolute top-1/2 right-1/4 w-40 h-40 rounded-full bg-[#F5E8DC]/20 blur-3xl" />
+          <div className="mobile-orb-float absolute bottom-1/4 left-1/2 w-24 h-24 rounded-full bg-[#C6A87D]/20 blur-xl" style={{ animationDelay: '2s' }} />
+          <div className="mobile-orb-float-alt absolute top-1/3 left-3/4 w-20 h-20 rounded-full bg-[#F5E8DC]/30 blur-2xl" style={{ animationDelay: '1s' }} />
+          <div className="mobile-orb-float absolute bottom-1/3 left-1/6 w-16 h-16 rounded-full bg-[#C6A87D]/15 blur-xl" style={{ animationDelay: '3s' }} />
         </div>
       ) : null}
 
@@ -132,11 +139,10 @@ export function Results() {
               className="relative group"
             >
               <div
-                className={`p-8 bg-white/5 backdrop-blur-sm rounded-3xl border transition-all duration-300 ${
-                  activeCard === index
-                    ? 'border-[#C6A87D]/60 bg-white/10 shadow-[0_0_0_1px_rgba(198,168,125,0.55)]'
-                    : 'border-[#C6A87D]/20 hover:border-[#C6A87D]/50 active:border-[#C6A87D]/50 active:shadow-[0_0_0_1px_rgba(198,168,125,0.5)]'
-                }`}
+                className={`p-8 bg-white/5 backdrop-blur-sm rounded-3xl border transition-all duration-300 ${activeCard === index
+                  ? 'border-[#C6A87D]/60 bg-white/10 shadow-[0_0_0_1px_rgba(198,168,125,0.55)]'
+                  : 'border-[#C6A87D]/20 hover:border-[#C6A87D]/50 active:border-[#C6A87D]/50 active:shadow-[0_0_0_1px_rgba(198,168,125,0.5)]'
+                  }`}
               >
                 <motion.div
                   initial={{ scale: 0 }}

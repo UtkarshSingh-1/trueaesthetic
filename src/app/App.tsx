@@ -1,20 +1,44 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route } from 'react-router';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
-import { Philosophy } from './components/Philosophy';
-import { Treatments } from './components/Treatments';
-import { Results } from './components/Results';
-import { WhyChooseUs } from './components/WhyChooseUs';
-import { Team } from './components/Team';
-import { CTA } from './components/CTA';
-import { Footer } from './components/Footer';
-import { BackToTop } from './components/BackToTop';
+import { BookingPage } from './pages/BookingPage';
+import { ServicePage } from './pages/ServicePage';
+import { ScrollToTop } from './components/ScrollToTop';
 
-export default function App() {
+// Lazy-load all below-the-fold sections
+const Philosophy = lazy(() =>
+  import('./components/Philosophy').then((m) => ({ default: m.Philosophy }))
+);
+const Treatments = lazy(() =>
+  import('./components/Treatments').then((m) => ({ default: m.Treatments }))
+);
+const Results = lazy(() =>
+  import('./components/Results').then((m) => ({ default: m.Results }))
+);
+const WhyChooseUs = lazy(() =>
+  import('./components/WhyChooseUs').then((m) => ({ default: m.WhyChooseUs }))
+);
+const Team = lazy(() =>
+  import('./components/Team').then((m) => ({ default: m.Team }))
+);
+const CTA = lazy(() =>
+  import('./components/CTA').then((m) => ({ default: m.CTA }))
+);
+const Footer = lazy(() =>
+  import('./components/Footer').then((m) => ({ default: m.Footer }))
+);
+const BackToTop = lazy(() =>
+  import('./components/BackToTop').then((m) => ({ default: m.BackToTop }))
+);
+
+function SectionFallback() {
+  return <div aria-hidden />;
+}
+
+function HomePage() {
   useEffect(() => {
-    // Smooth scrolling behavior
     document.documentElement.style.scrollBehavior = 'smooth';
-    
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
     };
@@ -23,37 +47,48 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F7F4F1] text-[#2D2A26] overflow-x-hidden">
       <Header />
-      
       <main>
         <Hero />
-        
-        <div id="philosophy">
-          <Philosophy />
-        </div>
-        
-        <div id="treatments">
-          <Treatments />
-        </div>
-        
-        <div id="results">
-          <Results />
-        </div>
-        
-        <div id="why">
-          <WhyChooseUs />
-        </div>
-        
-        <div id="team">
-          <Team />
-        </div>
-        
-        <div id="contact">
-          <CTA />
-        </div>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="philosophy"><Philosophy /></div>
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="treatments"><Treatments /></div>
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="results"><Results /></div>
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="why"><WhyChooseUs /></div>
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="team"><Team /></div>
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <div id="contact"><CTA /></div>
+        </Suspense>
       </main>
-      
-      <Footer />
-      <BackToTop />
+      <Suspense fallback={<SectionFallback />}>
+        <Footer />
+      </Suspense>
+      <Suspense fallback={null}>
+        <BackToTop />
+      </Suspense>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/book" element={<BookingPage />} />
+        <Route path="/services/:slug" element={<ServicePage />} />
+        {/* Catch-all → home */}
+        <Route path="*" element={<HomePage />} />
+      </Routes>
+    </>
   );
 }
