@@ -52,7 +52,6 @@ function GlowingCells() {
 }
 
 export function Results() {
-  const { ref, isInView } = useInView({ threshold: 0.05, once: true });
   const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
   const { shouldSimplify3D } = usePerformanceMode();
   const [activeCard, setActiveCard] = useState<number | null>(null);
@@ -69,17 +68,17 @@ export function Results() {
   ];
 
   return (
-    <section ref={ref} className="relative py-20 md:py-24 px-6 bg-[#2D2A26] text-white overflow-hidden">
+    <section className="relative py-20 md:py-24 px-6 bg-[#2D2A26] text-white overflow-hidden">
       {/* Background 3D with Expanding Oval Mask */}
       <div className="absolute inset-0 flex items-center justify-center opacity-40">
         <motion.div
           initial={{ clipPath: 'ellipse(0% 0% at 50% 50%)' }}
-          animate={isInView ? { clipPath: 'ellipse(60% 50% at 50% 50%)' } : {}}
+          animate={isCanvasInView ? { clipPath: 'ellipse(60% 50% at 50% 50%)' } : {}}
           transition={{ duration: 0.75, delay: 0.1 }}
           className="w-full h-full"
         >
           {/* GlowingCells uses useFrame → needs frameloop="always" not "demand" */}
-          {!shouldSimplify3D && isInView ? (
+          {!shouldSimplify3D && isCanvasInView ? (
             <Canvas
               camera={{ position: [0, 0, 6], fov: 50 }}
               dpr={1}
@@ -112,7 +111,8 @@ export function Results() {
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-8">
@@ -129,7 +129,8 @@ export function Results() {
             <motion.div
               key={result}
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.36, delay: 0.14 + index * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 1.03, y: -6 }}
@@ -146,7 +147,8 @@ export function Results() {
               >
                 <motion.div
                   initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : {}}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true, margin: "-10%" }}
                   transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
                   className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#C6A87D] to-[#F5E8DC] flex items-center justify-center"
                 >

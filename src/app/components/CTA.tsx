@@ -9,7 +9,6 @@ import { usePerformanceMode } from '../hooks/usePerformanceMode';
 import { useNavigate } from 'react-router';
 
 export function CTA() {
-  const { ref, isInView } = useInView({ threshold: 0.05, once: true });
   const { ref: canvasRef, isInView: isCanvasInView } = useInView({ threshold: 0, once: false });
   const { shouldReduce3D, shouldSimplify3D } = usePerformanceMode();
   const navigate = useNavigate();
@@ -35,15 +34,10 @@ export function CTA() {
   };
 
   return (
-    <section ref={ref} className="relative py-20 md:py-24 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
+    <section className="relative py-20 md:py-24 px-6 bg-gradient-to-br from-[#CFC6BE] via-[#E8DFD8] to-[#F7F4F1] overflow-hidden">
       {/* 3D Background with Large Droplet Mask */}
       <div ref={canvasRef} className="absolute inset-0 flex items-center justify-center opacity-60">
-        <motion.div
-          initial={{ clipPath: 'circle(0% at 50% 50%)' }}
-          animate={isInView ? { clipPath: 'circle(50% at 50% 50%)' } : {}}
-          transition={{ duration: 0.75, delay: 0.1 }}
-          className="w-full h-full"
-        >
+        <div className="w-full h-full" style={{ clipPath: 'circle(50% at 50% 50%)' }}>
           {!shouldSimplify3D && isCanvasInView ? (
             <Canvas
               camera={{ position: [0, 0, 6], fov: 50 }}
@@ -59,22 +53,25 @@ export function CTA() {
               <Environment preset="studio" />
             </Canvas>
           ) : null}
-        </motion.div>
+        </div>
       </div>
       {/* Mobile / reduced-motion / off-screen fallback (Zero WebGL, CSS only) */}
-      {shouldSimplify3D || !isCanvasInView ? (
-        <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="mobile-orb-float absolute top-10 -left-16 w-64 h-64 rounded-full bg-[#C6A87D]/30 blur-3xl opacity-60" />
-          <div className="mobile-orb-float-alt absolute bottom-0 -right-12 w-72 h-72 rounded-full bg-[#F5E8DC]/70 blur-3xl opacity-80" />
-          <div className="mobile-orb-float absolute top-1/2 left-1/4 w-32 h-32 rounded-full bg-[#C6A87D]/20 blur-2xl opacity-40" style={{ animationDelay: '2s' }} />
-        </div>
-      ) : null}
+      {
+        shouldSimplify3D || !isCanvasInView ? (
+          <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="mobile-orb-float absolute top-10 -left-16 w-64 h-64 rounded-full bg-[#C6A87D]/30 blur-3xl opacity-60" />
+            <div className="mobile-orb-float-alt absolute bottom-0 -right-12 w-72 h-72 rounded-full bg-[#F5E8DC]/70 blur-3xl opacity-80" />
+            <div className="mobile-orb-float absolute top-1/2 left-1/4 w-32 h-32 rounded-full bg-[#C6A87D]/20 blur-2xl opacity-40" style={{ animationDelay: '2s' }} />
+          </div>
+        ) : null
+      }
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-6 leading-tight">
@@ -116,7 +113,8 @@ export function CTA() {
           {/* Contact Info — clickable */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.5, delay: 0.14 }}
             className="flex flex-col sm:flex-row gap-8 justify-center items-center text-[#6B6661]"
           >
@@ -138,6 +136,6 @@ export function CTA() {
           </motion.div>
         </motion.div>
       </div>
-    </section>
+    </section >
   );
 }

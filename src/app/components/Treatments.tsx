@@ -76,9 +76,9 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
 
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ y: -10 }}
       whileTap={{ scale: 1.02, y: -6 }}
@@ -139,14 +139,13 @@ function TreatmentCard({ treatment, index }: { treatment: Treatment; index: numb
 }
 
 export function Treatments() {
-  const { ref, isInView } = useInView({ threshold: 0.1 });
-
   return (
-    <section ref={ref} className="py-20 md:py-24 px-6 bg-gradient-to-b from-[#F7F4F1] to-[#E8DFD8]">
+    <section className="py-20 md:py-24 px-6 bg-gradient-to-b from-[#F7F4F1] to-[#E8DFD8]">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.5 }}
           className="text-center mb-20"
         >
